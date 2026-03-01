@@ -38,7 +38,7 @@ export default async function handler(req, res) {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    api_key: CONVERTKIT_API_KEY,
+                    api_secret: CONVERTKIT_API_KEY,
                     email,
                     first_name: first_name || '',
                     fields: fields || {},
