@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Free guide to small talk in Australia. The exact phrases Aussies use to start, keep and exit everyday conversations.">
+    <meta name="author" content="Your Aussie Uncle">
+
+    <meta property="og:title" content="Tired of awkward silences with Australians?">
+    <meta property="og:description" content="Free guide: the exact phrases Aussies use in everyday conversations.">
+    <meta property="og:type" content="website">
+
+    <title>Aussie Small Talk Survival Guide | Your Aussie Uncle</title>
+
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="apple-touch-icon" href="assets/favicon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="brand">
+            <img src="assets/logo.png" alt="Your Aussie Uncle" class="brand-logo">
+        </div>
+
+        <div class="landing-content">
+            <div class="landing-avatar">
+                <img src="assets/jimbo.jpg" alt="Jimbo from Your Aussie Uncle" class="landing-avatar-img">
+            </div>
+
+            <h1 class="headline">Tired of awkward silences with Australians?</h1>
+            <p class="subheadline">Get the free guide with the exact phrases Aussies use to start conversations, keep them going, and leave without it getting weird.</p>
+
+            <!-- Social Proof Banner -->
+            <div class="social-proof-banner">
+                <div class="sp-item">
+                    <span class="sp-icon">🎓</span>
+                    <span class="sp-text"><strong>10,000+</strong> students taught</span>
+                </div>
+                <div class="sp-divider"></div>
+                <div class="sp-item">
+                    <span class="sp-icon">🌍</span>
+                    <span class="sp-text"><strong>350K+</strong> followers</span>
+                </div>
+                <div class="sp-divider"></div>
+                <div class="sp-item">
+                    <span class="sp-icon">📜</span>
+                    <span class="sp-text"><strong>TEFL</strong> certified</span>
+                </div>
+            </div>
+
+            <!-- Email Capture (hidden after submit) -->
+            <div class="email-capture" id="email-capture">
+                <h3 class="email-headline">Grab the free Small Talk Survival Guide</h3>
+                <ul class="email-benefits">
+                    <li>Start conversations with anyone without freezing up</li>
+                    <li>Feel confident chatting at BBQs, cafes, and the school pickup</li>
+                    <li>Never get stuck in an awkward silence again</li>
+                    <li>Know what Aussies love talking about (and what to never bring up)</li>
+                </ul>
+                <form id="email-form" class="email-form">
+                    <input type="text" id="user-name" placeholder="First Name" required>
+                    <input type="email" id="user-email" placeholder="Email Address" required>
+                    <button type="submit" class="btn btn-secondary btn-large btn-glow">
+                        Send Me the Free Guide
+                        <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+                </form>
+                <p class="form-error" id="form-error"></p>
+                <p class="social-proof">Join 10,000+ people learning real Aussie English</p>
+            </div>
+
+            <!-- Success (shown after submit) -->
+            <div class="email-capture" id="success-section" style="display: none;">
+                <div class="form-success">
+                    <div class="success-emoji">📬</div>
+                    <h3>Check your email</h3>
+                    <p>Your Small Talk Survival Guide is on its way. Check your inbox (and spam folder, just in case).</p>
+                </div>
+            </div>
+
+            <div class="trust-badges">
+                <span class="trust-item">✓ 100% free</span>
+                <span class="trust-item">✓ No spam</span>
+                <span class="trust-item">✓ Unsubscribe anytime</span>
+            </div>
+
+            <!-- Urgency Element -->
+            <div class="urgency-banner">
+                <span class="urgency-dot"></span>
+                <span class="urgency-text"><strong>New guide</strong> just released March 2026</span>
+            </div>
+        </div>
+
+        <div class="landing-footer">
+            <p>Created by Your Aussie Uncle Jimbo</p>
+        </div>
+    </div>
+
+    <script>
+        const SUBSCRIBE_API_URL = '/api/subscribe';
+
+        document.getElementById('email-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('user-name').value.trim();
+            const email = document.getElementById('user-email').value.trim();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const errorEl = document.getElementById('form-error');
+            const originalHTML = submitBtn.innerHTML;
+
+            errorEl.style.display = 'none';
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>Sending...</span>';
+
+            try {
+                const response = await fetch(SUBSCRIBE_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: email,
+                        first_name: name,
+                        tags: ['lead-magnet-small-talk-guide']
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    document.getElementById('email-capture').style.display = 'none';
+                    document.getElementById('success-section').style.display = 'block';
+                    document.getElementById('success-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    throw new Error(data.error || 'Something went wrong');
+                }
+            } catch (error) {
+                console.error('Subscribe error:', error);
+                errorEl.textContent = 'Something went wrong. Please try again.';
+                errorEl.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalHTML;
+            }
+        });
+    </script>
+</body>
+</html>
