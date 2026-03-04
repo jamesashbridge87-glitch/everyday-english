@@ -303,13 +303,14 @@ body {
 .social-proof-banner {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--spacing-sm) var(--spacing-xl);
+    gap: var(--spacing-sm) var(--spacing-lg);
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-lg);
     padding: var(--spacing-md) var(--spacing-lg);
     margin-bottom: var(--spacing-xl);
     width: 100%;
+    justify-items: center;
 }
 
 .sp-item {
@@ -318,6 +319,7 @@ body {
     gap: 6px;
     font-size: 0.9rem;
     color: var(--light-grey);
+    white-space: nowrap;
 }
 
 .sp-icon {
@@ -441,17 +443,16 @@ body {
     }
 
     .social-proof-banner {
-        grid-template-columns: 1fr;
         padding: var(--spacing-sm) var(--spacing-md);
-        gap: var(--spacing-xs);
+        gap: var(--spacing-xs) var(--spacing-sm);
     }
 
     .sp-item {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
     }
 
     .sp-icon {
-        font-size: 1rem;
+        font-size: 0.95rem;
     }
 
     .urgency-banner {
