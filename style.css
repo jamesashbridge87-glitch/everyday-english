@@ -301,16 +301,15 @@ body {
 
 /* ===== Social Proof Banner ===== */
 .social-proof-banner {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-md);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-sm) var(--spacing-xl);
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: var(--radius-full);
-    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md) var(--spacing-lg);
     margin-bottom: var(--spacing-xl);
-    flex-wrap: wrap;
-    justify-content: center;
+    width: 100%;
 }
 
 .sp-item {
@@ -328,13 +327,6 @@ body {
 .sp-text strong {
     color: var(--yellow);
     font-weight: 700;
-}
-
-.sp-divider {
-    width: 4px;
-    height: 4px;
-    background: var(--mid-grey);
-    border-radius: 50%;
 }
 
 /* ===== Urgency Banner ===== */
@@ -449,8 +441,8 @@ body {
     }
 
     .social-proof-banner {
-        padding: var(--spacing-xs) var(--spacing-md);
-        gap: var(--spacing-sm);
+        padding: var(--spacing-sm) var(--spacing-md);
+        gap: var(--spacing-sm) var(--spacing-md);
     }
 
     .sp-item {
@@ -459,10 +451,6 @@ body {
 
     .sp-icon {
         font-size: 1rem;
-    }
-
-    .sp-divider {
-        display: none;
     }
 
     .urgency-banner {
