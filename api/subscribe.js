@@ -1,6 +1,6 @@
 /**
  * Vercel Serverless Function — ConvertKit Subscriber Proxy
- * Hides API key server-side.
+ * Uses v3 API with public api_key for form subscriptions.
  */
 
 const CONVERTKIT_API_KEY = process.env.CONVERTKIT_API_KEY;
@@ -20,7 +20,7 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { email, first_name, fields, tags } = req.body;
+    const { email, first_name } = req.body;
 
     if (!email) {
         return res.status(400).json({ error: 'Email is required' });
@@ -38,11 +38,9 @@ export default async function handler(req, res) {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    api_secret: CONVERTKIT_API_KEY,
+                    api_key: CONVERTKIT_API_KEY,
                     email,
-                    first_name: first_name || '',
-                    fields: fields || {},
-                    tags: tags || []
+                    first_name: first_name || ''
                 })
             }
         );
