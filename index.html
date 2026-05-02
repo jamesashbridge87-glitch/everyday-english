@@ -29,6 +29,32 @@
     <!-- ManyChat -->
     <script src="//widget.manychat.com/4146884_88ca9.js" defer="defer"></script>
     <script src="https://mccdn.me/assets/js/widget.js" defer="defer"></script>
+
+    <!-- Meta Pixel -->
+    <script>
+        !function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '1414360586898639');
+        fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+        src="https://www.facebook.com/tr?id=1414360586898639&ev=PageView&noscript=1"
+    /></noscript>
+
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JPPBPVVNYN"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-JPPBPVVNYN');
+    </script>
 </head>
 <body>
     <div class="container">
@@ -144,6 +170,22 @@
                 const data = await response.json();
 
                 if (response.ok && data.success) {
+                    if (typeof fbq === 'function') {
+                        fbq('track', 'Lead', {
+                            currency: 'AUD',
+                            value: 5.00,
+                            content_name: 'Small Talk Survival Guide',
+                            content_category: 'Lead Generation'
+                        });
+                    }
+                    if (typeof gtag === 'function') {
+                        gtag('event', 'generate_lead', {
+                            currency: 'AUD',
+                            value: 5.00,
+                            content_name: 'Small Talk Survival Guide'
+                        });
+                    }
+
                     document.getElementById('email-capture').style.display = 'none';
                     document.getElementById('success-section').style.display = 'block';
                     document.getElementById('success-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
