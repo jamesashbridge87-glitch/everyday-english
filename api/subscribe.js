@@ -20,7 +20,7 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { email, first_name } = req.body;
+    const { email, first_name, utm, referrer } = req.body;
 
     if (!email) {
         return res.status(400).json({ error: 'Email is required' });
@@ -31,17 +31,35 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: 'Server configuration error' });
     }
 
+    const ALLOWED_UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+    const fields = {};
+    if (utm && typeof utm === 'object') {
+        for (const key of ALLOWED_UTM_KEYS) {
+            if (typeof utm[key] === 'string' && utm[key]) {
+                fields[key] = utm[key].slice(0, 200);
+            }
+        }
+    }
+    if (typeof referrer === 'string' && referrer) {
+        fields.referrer = referrer.slice(0, 500);
+    }
+
     try {
+        const ckBody = {
+            api_key: CONVERTKIT_API_KEY,
+            email,
+            first_name: first_name || ''
+        };
+        if (Object.keys(fields).length > 0) {
+            ckBody.fields = fields;
+        }
+
         const ckResponse = await fetch(
             `https://api.convertkit.com/v3/forms/${CONVERTKIT_FORM_ID}/subscribe`,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    api_key: CONVERTKIT_API_KEY,
-                    email,
-                    first_name: first_name || ''
-                })
+                body: JSON.stringify(ckBody)
             }
         );
 

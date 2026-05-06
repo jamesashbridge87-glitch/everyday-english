@@ -151,6 +151,28 @@
 
     <script>
         const SUBSCRIBE_API_URL = '/api/subscribe';
+        const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+
+        function captureUtmParams() {
+            const params = new URLSearchParams(window.location.search);
+            const fromUrl = {};
+            UTM_KEYS.forEach(key => {
+                const value = params.get(key);
+                if (value) fromUrl[key] = value.slice(0, 200);
+            });
+            if (Object.keys(fromUrl).length > 0) {
+                try { sessionStorage.setItem('utm_params', JSON.stringify(fromUrl)); } catch (e) {}
+                return fromUrl;
+            }
+            try {
+                const stored = sessionStorage.getItem('utm_params');
+                return stored ? JSON.parse(stored) : {};
+            } catch (e) {
+                return {};
+            }
+        }
+
+        const utmParams = captureUtmParams();
 
         document.getElementById('email-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -172,7 +194,9 @@
                     body: JSON.stringify({
                         email: email,
                         first_name: name,
-                        tags: ['lead-magnet-small-talk-guide']
+                        tags: ['lead-magnet-small-talk-guide'],
+                        utm: utmParams,
+                        referrer: document.referrer || ''
                     })
                 });
 
@@ -180,19 +204,19 @@
 
                 if (response.ok && data.success) {
                     if (typeof fbq === 'function') {
-                        fbq('track', 'Lead', {
+                        fbq('track', 'Lead', Object.assign({
                             currency: 'AUD',
                             value: 5.00,
                             content_name: 'Small Talk Survival Guide',
                             content_category: 'Lead Generation'
-                        });
+                        }, utmParams));
                     }
                     if (typeof gtag === 'function') {
-                        gtag('event', 'generate_lead', {
+                        gtag('event', 'generate_lead', Object.assign({
                             currency: 'AUD',
                             value: 5.00,
                             content_name: 'Small Talk Survival Guide'
-                        });
+                        }, utmParams));
                     }
 
                     document.getElementById('email-capture').style.display = 'none';
