@@ -125,9 +125,19 @@
             <!-- Success (shown after submit) -->
             <div class="email-capture" id="success-section" style="display: none;">
                 <div class="form-success">
-                    <div class="success-emoji">📬</div>
-                    <h3>Check your email</h3>
-                    <p>Your Small Talk Survival Guide is on its way. Check your inbox (and spam folder, just in case).</p>
+                    <div class="success-emoji">🎉</div>
+                    <h3>Your guide is ready</h3>
+                    <a id="pdf-download-btn"
+                       href="https://drive.google.com/file/d/1fxfFPcZNE8eWDHkOhC2XfYfMb2SoGp9L/view?usp=sharing"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="btn btn-secondary btn-large btn-glow">
+                        📥 Open Your Guide Now
+                        <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                    <p class="success-helper">We've also emailed it to you — check your inbox (and spam folder, just in case).</p>
                 </div>
             </div>
 
@@ -231,6 +241,23 @@
                 errorEl.style.display = 'block';
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalHTML;
+            }
+        });
+
+        document.getElementById('pdf-download-btn').addEventListener('click', () => {
+            if (typeof fbq === 'function') {
+                fbq('track', 'ViewContent', Object.assign({
+                    content_name: 'Small Talk Survival Guide',
+                    content_category: 'Lead Magnet',
+                    content_ids: ['small-talk-survival-guide']
+                }, utmParams));
+            }
+            if (typeof gtag === 'function') {
+                gtag('event', 'file_download', Object.assign({
+                    file_name: 'Small Talk Survival Guide.pdf',
+                    link_url: 'https://drive.google.com/file/d/1fxfFPcZNE8eWDHkOhC2XfYfMb2SoGp9L/view',
+                    content_name: 'Small Talk Survival Guide'
+                }, utmParams));
             }
         });
     </script>
