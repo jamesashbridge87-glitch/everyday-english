@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex,nofollow">
+    <title>Redirecting…</title>
+
+    <!-- Meta Pixel -->
+    <script>
+        !function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '1414360586898639');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+        src="https://www.facebook.com/tr?id=1414360586898639&ev=ViewContent&noscript=1"
+    /></noscript>
+
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JPPBPVVNYN"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-JPPBPVVNYN');
+    </script>
+
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=https://youraussieuncle.com.au/90-second-aussie?utm_source=lm_smalltalk_pdf&utm_medium=pdf_softpitch&utm_campaign=90sa_ups">
+    </noscript>
+
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .redirect-message p { color: #999; margin: 0; }
+        .redirect-message .spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-top-color: #FF65BE;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="redirect-message">
+        <div class="spinner"></div>
+        <p>On ya way, mate…</p>
+    </div>
+
+    <script>
+        const DESTINATION = 'https://youraussieuncle.com.au/90-second-aussie?utm_source=lm_smalltalk_pdf&utm_medium=pdf_softpitch&utm_campaign=90sa_ups';
+        const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+
+        const params = new URLSearchParams(window.location.search);
+        const incomingUtm = {};
+        UTM_KEYS.forEach(key => {
+            const value = params.get(key);
+            if (value) incomingUtm[key] = value.slice(0, 200);
+        });
+
+        if (typeof fbq === 'function') {
+            fbq('track', 'ViewContent', Object.assign({
+                content_name: '90 Second Aussie',
+                content_category: 'PDF Soft Pitch',
+                content_ids: ['90-second-aussie']
+            }, incomingUtm));
+        }
+        if (typeof gtag === 'function') {
+            gtag('event', 'select_content', Object.assign({
+                content_type: 'pdf_softpitch',
+                item_id: '90-second-aussie'
+            }, incomingUtm));
+        }
+
+        setTimeout(() => {
+            window.location.replace(DESTINATION);
+        }, 400);
+    </script>
+</body>
+</html>
