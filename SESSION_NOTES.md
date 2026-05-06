@@ -19,6 +19,14 @@ https://github.com/jamesashbridge87-glitch/everyday-english/pull/1
 
 **Verified live**: Pixel Helper showed `Lead` with currency/value ✅; Clarity Live showed test session ✅; GA4 Realtime showed `page_view` with correct page title ✅.
 
+### PR #3 — Download button on success card (merged 2026-05-06)
+https://github.com/jamesashbridge87-glitch/everyday-english/pull/3
+
+- Replaced "Check your email" success message with a primary `Open Your Guide Now` button linking to the Drive PDF (https://drive.google.com/file/d/1fxfFPcZNE8eWDHkOhC2XfYfMb2SoGp9L/view)
+- `target="_blank" rel="noopener noreferrer"` so success card stays open as a CTA surface for future video/soft-pitch
+- Email messaging kept as helper text below
+- Click fires Meta Pixel `ViewContent` (with UTMs) and GA4 `file_download` — used `ViewContent`, not a second `Lead`, to avoid inflating Lead count / corrupting CPL math
+
 ### PR #2 — UTM capture and forwarding (merged 2026-05-06)
 https://github.com/jamesashbridge87-glitch/everyday-english/pull/2
 
@@ -58,14 +66,26 @@ Tested with `https://guide.youraussieuncle.com.au/?utm_source=test&utm_medium=ma
 Net: Meta + ConvertKit attribution working. GA4 event-level attribution unverified, but GA4's built-in Acquisition reports still pick up UTMs via auto-captured `page_view`, so campaign reporting isn't blocked.
 
 ### B. Remaining post-launch tasks (priority order)
-1. **GA4 Key Event** — Admin → Events → toggle `generate_lead` as Key Event so it shows in conversion reports.
+1. **GA4 Key Event** — Admin → Events → toggle `generate_lead` (and consider `file_download` and `ViewContent` equivalents) as Key Events so they show in conversion reports.
 2. **Meta Custom Audiences** — build retargeting audiences now so they populate:
    - Audience 1: fired `Lead` (warm list for upsell)
-   - Audience 2: page viewers who didn't fire `Lead` (drop-off retargeting)
-   - Optional: audience segmented by `utm_campaign` for campaign-level retargeting
-3. **Revisit `value: 5.00` AUD placeholder** — update once real CPL or LTV is known; Meta optimization improves with realistic values.
-4. **Cookie consent banner** — only required if EU/UK traffic. Skip if AU-only.
-5. **Copy update** — `urgency-banner` says "March 2026"; today is May 2026. Refresh.
+   - Audience 2: fired `ViewContent` for the guide (downloaded — hottest list for 90SA upsell)
+   - Audience 3: page viewers who didn't fire `Lead` (drop-off retargeting)
+   - Optional: segment by `utm_campaign` for campaign-level retargeting
+3. **PDF soft-pitch to 90SA** (planned, not started):
+   - Edit final page of guide PDF (in Drive) with a "Step 2" CTA to 90SA
+   - Add a tracked redirect on Vercel: `/go/90sa` → `307` to UTM-tagged 90SA URL
+   - UTM template: `?utm_source=lm_small_talk_pdf&utm_medium=pdf_softpitch&utm_campaign=90sa_upsell`
+4. **Click-to-play video on success card** — parked, no video recorded yet. When recorded, embed (Loom or YouTube unlisted) above the download button. Click-to-play, not autoplay.
+5. **ManyChat ↔ Vercel handshake** (Phase 2): track "landed but didn't submit" + "submitted but didn't download" → trigger automated re-engagement DMs. Architecture:
+   - ManyChat appends `mc_id={{user_id}}` to URL
+   - Page fires server event on load → mark "landed"
+   - On submit/download → mark "subscribed"/"downloaded" via webhook to ManyChat API
+   - ITP/Brave strip URL params — treat as best-effort signal, not source of truth
+   - Email is the durable identifier post-submit; `mc_id` only matters for the "abandoned" cohort
+6. **Revisit `value: 5.00` AUD placeholder** — update once real CPL or LTV is known.
+7. **Cookie consent banner** — only required if EU/UK traffic. Skip if AU-only.
+8. **Copy update** — `urgency-banner` says "March 2026"; today is May 2026. Refresh.
 
 ### C. Meta diagnostic warning
 Per the original brief, Events Manager "missing currency/value" warning takes up to 24h to clear after first clean events. Should be cleared by now (PR #1 shipped 2026-05-02) — confirm and move on.
