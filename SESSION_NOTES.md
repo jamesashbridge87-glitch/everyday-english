@@ -92,3 +92,17 @@ Per the original brief, Events Manager "missing currency/value" warning takes up
 
 ### GA4 custom dimensions (event-scoped)
 `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`
+
+### Canonical UTM URL (ManyChat auto-DM to new IG followers)
+```
+https://guide.youraussieuncle.com.au/?utm_source=instagram&utm_medium=auto_dm&utm_campaign=lm_small_talk&utm_content=new_follower_everyday
+```
+
+| Param | Value | Purpose |
+|---|---|---|
+| `utm_source` | `instagram` | platform |
+| `utm_medium` | `auto_dm` | delivery mechanism |
+| `utm_campaign` | `lm_small_talk` | lead magnet identifier (`lm` prefix = lead magnet) |
+| `utm_content` | `new_follower_everyday` | audience segment |
+
+**Convention**: snake_case with underscores (not hyphens). Stick to this — mixing `auto_dm` and `auto-dm` will fragment reports. Channel is single-source for now (ManyChat auto-DM); historical 200+ subscribers were backfilled manually since they all came from this same channel before UTM tracking was wired up.
