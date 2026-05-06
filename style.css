@@ -415,15 +415,28 @@ body {
     font-size: 0.95rem;
 }
 
+.form-success .success-headline {
+    color: var(--yellow);
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-xs);
+}
+
+.form-success .success-subheadline {
+    color: var(--light-grey);
+    font-size: 1rem;
+    margin-bottom: var(--spacing-md);
+}
+
 .form-success #pdf-download-btn {
     margin: var(--spacing-md) 0;
     text-decoration: none;
 }
 
-.form-success .success-helper {
-    font-size: 0.85rem;
-    color: var(--mid-grey);
-    margin-top: var(--spacing-sm);
+.form-success .success-bridge {
+    font-size: 0.9rem;
+    color: var(--light-grey);
+    margin-top: var(--spacing-md);
+    line-height: 1.6;
 }
 
 /* ===== Mobile ===== */
