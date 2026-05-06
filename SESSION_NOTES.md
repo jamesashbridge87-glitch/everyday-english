@@ -19,6 +19,30 @@ https://github.com/jamesashbridge87-glitch/everyday-english/pull/1
 
 **Verified live**: Pixel Helper showed `Lead` with currency/value ✅; Clarity Live showed test session ✅; GA4 Realtime showed `page_view` with correct page title ✅.
 
+### PR #6 — Tracked redirect for PDF soft-pitch (merged 2026-05-06)
+https://github.com/jamesashbridge87-glitch/everyday-english/pull/6
+
+- New file `go/90sa/index.html` served at `https://guide.youraussieuncle.com.au/go/90sa`
+- Fires Meta Pixel `ViewContent` (`content_name: '90 Second Aussie'`, `content_category: 'PDF Soft Pitch'`, `content_ids: ['90-second-aussie']`) and GA4 `select_content` (`content_type: 'pdf_softpitch'`, `item_id: '90-second-aussie'`)
+- 400ms delay (spinner + "On ya way, mate…" copy) ensures events flush before redirect
+- Hardcoded destination: `https://youraussieuncle.com.au/90-second-aussie?utm_source=lm_smalltalk_pdf&utm_medium=pdf_softpitch&utm_campaign=90sa_ups`
+- `90sa_ups` (not `90sa_upsell`) is intentional — keeps the campaign value stealth if the user inspects the URL bar
+- `<noscript>` meta-refresh fallback keeps the redirect working with JS disabled (no tracking in that case)
+- **Action required after this PR**: re-export the guide PDF with the soft-pitch link changed from the destination URL to `https://guide.youraussieuncle.com.au/go/90sa`. Re-upload to Drive. If the file ID changes, update `index.html` `pdf-download-btn` href.
+
+### PR #5 — Spam folder hint on success card (merged 2026-05-06)
+https://github.com/jamesashbridge87-glitch/everyday-english/pull/5
+
+Minor copy tweak: appended "check your inbox (and spam folder, just in case)" to the email backup line.
+
+### PR #4 — Success card copy update (merged 2026-05-06)
+https://github.com/jamesashbridge87-glitch/everyday-english/pull/4
+
+- Headline: "Your guide is ready" → "You're in, mate."
+- Added sub-headline: "Your Small Talk Survival Guide is ready below."
+- Bridge copy seeds the "step two" upsell concept ("Reading the guide is step one. Using it next Monday morning when someone says 'how was your weekend?' at the kettle, that's step two.")
+- Removed celebration emoji — new headline carries the moment
+
 ### PR #3 — Download button on success card (merged 2026-05-06)
 https://github.com/jamesashbridge87-glitch/everyday-english/pull/3
 
@@ -72,10 +96,7 @@ Net: Meta + ConvertKit attribution working. GA4 event-level attribution unverifi
    - Audience 2: fired `ViewContent` for the guide (downloaded — hottest list for 90SA upsell)
    - Audience 3: page viewers who didn't fire `Lead` (drop-off retargeting)
    - Optional: segment by `utm_campaign` for campaign-level retargeting
-3. **PDF soft-pitch to 90SA** (planned, not started):
-   - Edit final page of guide PDF (in Drive) with a "Step 2" CTA to 90SA
-   - Add a tracked redirect on Vercel: `/go/90sa` → `307` to UTM-tagged 90SA URL
-   - UTM template: `?utm_source=lm_small_talk_pdf&utm_medium=pdf_softpitch&utm_campaign=90sa_upsell`
+3. **PDF soft-pitch to 90SA** — redirect tracker shipped (PR #6). Outstanding step: re-export PDF with link target changed from the destination URL to `https://guide.youraussieuncle.com.au/go/90sa`, then re-upload to Drive. If file ID changes, update `index.html` `pdf-download-btn` href.
 4. **Click-to-play video on success card** — parked, no video recorded yet. When recorded, embed (Loom or YouTube unlisted) above the download button. Click-to-play, not autoplay.
 5. **ManyChat ↔ Vercel handshake** (Phase 2): track "landed but didn't submit" + "submitted but didn't download" → trigger automated re-engagement DMs. Architecture:
    - ManyChat appends `mc_id={{user_id}}` to URL
@@ -112,6 +133,11 @@ Per the original brief, Events Manager "missing currency/value" warning takes up
 
 ### GA4 custom dimensions (event-scoped)
 `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`
+
+### Tracked redirect (PDF soft-pitch link)
+- **PDF link should point to**: `https://guide.youraussieuncle.com.au/go/90sa`
+- **Redirects to**: `https://youraussieuncle.com.au/90-second-aussie?utm_source=lm_smalltalk_pdf&utm_medium=pdf_softpitch&utm_campaign=90sa_ups`
+- `90sa_ups` is stealth shorthand — do not change to `90sa_upsell` (intentional to obscure the upsell intent if user inspects URL)
 
 ### Canonical UTM URL (ManyChat auto-DM to new IG followers)
 ```
