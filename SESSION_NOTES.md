@@ -1,70 +1,74 @@
-# Session Notes — 2026-05-02
+# Session Notes
 
-Handoff document. Resume from the **Pending** section below.
+Handoff document — last updated **2026-05-06**.
+
+Resume from the **Pending** section below.
 
 ---
 
 ## Done & shipped to production
 
-Merged via PR #1 (`claude/general-session-OYW9L` → `main`, squash). Vercel auto-deployed; production verified serving new code.
+### PR #1 — Hero spacing + analytics install (merged 2026-05-02)
+https://github.com/jamesashbridge87-glitch/everyday-english/pull/1
 
-### 1. Hero spacing
-- `style.css`: logo `200px → 120px`, avatar `120px → 80px`
-- Tightened brand padding, headline/subheadline margins, social-proof banner padding
-- Changed `.landing-content` from `justify-content: center` to `flex-start` so the hero hugs the top
-- Goal: email capture card lands above the fold
+- **Hero spacing** (`style.css`): logo `200px → 120px`, avatar `120px → 80px`, tightened brand padding, headline/subheadline margins, social-proof banner padding. Changed `.landing-content` to `justify-content: flex-start` so the email capture lands above the fold.
+- **Meta Pixel** `1414360586898639`: base snippet + `<noscript>` in `<head>`. `PageView` on load. `Lead` fires only inside `response.ok && data.success` with `currency: AUD, value: 5.00, content_name: 'Small Talk Survival Guide', content_category: 'Lead Generation'`.
+- **GA4** `G-JPPBPVVNYN`: gtag.js in `<head>`. `page_view` auto, `generate_lead` in success branch with `currency`, `value`, `content_name`.
+- **Microsoft Clarity** `w44i7isac0`: standard async snippet in `<head>`.
+- All event calls guarded with `typeof === 'function'` so blockers can't break form submit.
 
-### 2. Meta Pixel — `1414360586898639`
-- Base snippet + `<noscript>` fallback in `<head>` of `index.html`
-- `PageView` fires on page load
-- `Lead` fires **only** inside the `response.ok && data.success` branch with:
-  ```js
-  { currency: 'AUD', value: 5.00, content_name: 'Small Talk Survival Guide', content_category: 'Lead Generation' }
-  ```
-- Guarded with `typeof fbq === 'function'` so blockers can't break form submission
-- **Verified live**: Pixel Helper shows `Lead` with currency/value ✅
+**Verified live**: Pixel Helper showed `Lead` with currency/value ✅; Clarity Live showed test session ✅; GA4 Realtime showed `page_view` with correct page title ✅.
 
-### 3. GA4 — `G-JPPBPVVNYN`
-- gtag.js snippet in `<head>`
-- `page_view` fires automatically on load (verified via Realtime — page title "Aussie Small Talk Survival Guide" showing)
-- `generate_lead` fires in the success branch with `currency: AUD, value: 5.00, content_name`
-- Guarded with `typeof gtag === 'function'`
+### PR #2 — UTM capture and forwarding (merged 2026-05-06)
+https://github.com/jamesashbridge87-glitch/everyday-english/pull/2
 
-### 4. Microsoft Clarity — `w44i7isac0`
-- Standard async snippet in `<head>`
-- **Verified live**: Live view showed test session ✅
+- **`index.html`**: captures `utm_source/medium/campaign/term/content` from URL on load, sessionStorage fallback for internal nav. Forwards to `/api/subscribe` body and includes in `Lead` + `generate_lead` event params.
+- **`api/subscribe.js`**: accepts `utm` + `referrer`, whitelists allowed keys, caps length, forwards to ConvertKit via `fields` parameter.
+- **Dashboard setup completed by user**:
+  - ConvertKit custom fields created: `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`, `referrer`
+  - GA4 custom dimensions registered for the same keys
 
-### 5. Production verification
+**Verified live**: `curl` confirmed `captureUtmParams` and `utm:` are in the served HTML ✅. End-to-end UTM flow not yet tested in dashboards (see Pending A).
+
+### Production verification commands
 ```bash
+# Confirm analytics snippets are deployed
 curl -s "https://guide.youraussieuncle.com.au/?cb=$(date +%s)" \
   | grep -E "fbq\('init'|gtag\('config'|clarity\.ms"
+
+# Confirm UTM code is deployed
+curl -s "https://guide.youraussieuncle.com.au/?cb=$(date +%s)" \
+  | grep -E "captureUtmParams|utm:"
 ```
-Returned all three IDs — confirms Vercel is tracking `main` and the deploy shipped. (No "gotcha #1" issue.)
 
 ---
 
-## Pending — pick up here next session
+## Pending — pick up here
 
-### A. Confirm `generate_lead` reaches GA4
-`page_view` is confirmed working in Realtime. `generate_lead` not yet confirmed. To diagnose:
-1. Open guide.youraussieuncle.com.au in a clean Incognito tab
-2. F12 → Network tab → filter `collect`
-3. Submit the form with a test email
-4. Look for a **second** POST to `google-analytics.com/g/collect` with `en=generate_lead` in the payload
-5. If POST appears but Realtime doesn't show → GA4 dashboard lag (can take a few minutes for first instance of a new event name)
-6. If POST never appears → check browser Console for errors; either form submit failed or gtag was undefined at the call site
+### A. Confirm full UTM end-to-end flow
+Visit a UTM URL in Incognito, submit a test email, and verify:
+```
+https://guide.youraussieuncle.com.au/?utm_source=test&utm_medium=manual&utm_campaign=verify
+```
+Then check:
+1. **Pixel Helper** shows `Lead` event params include `utm_source: test`, `utm_medium: manual`, `utm_campaign: verify`
+2. **GA4 Realtime** shows `generate_lead` (this is also the still-outstanding GA4 generate_lead verification from last session — kill two birds)
+3. **ConvertKit** subscriber record shows `utm_source`, `utm_medium`, `utm_campaign`, `referrer` populated
 
-### B. Walk through remaining post-launch tasks (in priority order)
+If GA4 `generate_lead` still doesn't appear in Realtime: F12 → Network → filter `collect` → look for second POST with `en=generate_lead` in payload after submit. If POST appears but Realtime doesn't show, it's GA4 dashboard lag (can take a few minutes for new event names). If POST never appears, check Console for errors.
+
+### B. Remaining post-launch tasks (priority order)
 1. **GA4 Key Event** — Admin → Events → toggle `generate_lead` as Key Event so it shows in conversion reports.
-2. **Meta Custom Audiences** — Build retargeting audiences now so they start populating:
-   - Audience 1: people who fired `Lead` (warm list for upsell)
+2. **Meta Custom Audiences** — build retargeting audiences now so they populate:
+   - Audience 1: fired `Lead` (warm list for upsell)
    - Audience 2: page viewers who didn't fire `Lead` (drop-off retargeting)
-3. **Revisit `value: 5.00` AUD placeholder** — update once you know real CPL or LTV; Meta optimization improves with realistic values.
+   - Optional: audience segmented by `utm_campaign` for campaign-level retargeting
+3. **Revisit `value: 5.00` AUD placeholder** — update once real CPL or LTV is known; Meta optimization improves with realistic values.
 4. **Cookie consent banner** — only required if EU/UK traffic. Skip if AU-only.
-5. **Copy update** — `urgency-banner` says "March 2026"; today is May 2026. Refresh the date.
+5. **Copy update** — `urgency-banner` says "March 2026"; today is May 2026. Refresh.
 
-### C. Wait for Meta diagnostic to clear
-Per the brief, Events Manager warning ("currency/value missing") takes ~24h to clear after first clean events. Don't act on this — just check back tomorrow.
+### C. Meta diagnostic warning
+Per the original brief, Events Manager "missing currency/value" warning takes up to 24h to clear after first clean events. Should be cleared by now (PR #1 shipped 2026-05-02) — confirm and move on.
 
 ---
 
@@ -72,9 +76,8 @@ Per the brief, Events Manager warning ("currency/value missing") takes ~24h to c
 
 - **Repo**: `jamesashbridge87-glitch/everyday-english`
 - **Production**: https://guide.youraussieuncle.com.au
-- **PR shipped**: https://github.com/jamesashbridge87-glitch/everyday-english/pull/1
-- **Working branch this session**: `claude/general-session-OYW9L` (merged, can be deleted or reused)
-- **Form architecture**: custom `<form>` in `index.html` POSTs to `/api/subscribe` (Vercel function in `api/subscribe.js` calling ConvertKit v3 API). Form ID `9135329`. **Not** a Kit-hosted embed — that means the success branch is in inline JS in `index.html`, which is where all conversion events fire.
+- **Working branch**: `claude/general-session-OYW9L` (reused across sessions, force-reset from main between PRs)
+- **Form architecture**: custom `<form>` in `index.html` POSTs to `/api/subscribe` (Vercel function calling ConvertKit v3 API). Form ID `9135329`. NOT a Kit-hosted embed — success branch is in inline JS in `index.html`, which is where all conversion events fire.
 
 ### IDs in one place
 | Tool | ID |
@@ -83,3 +86,9 @@ Per the brief, Events Manager warning ("currency/value missing") takes ~24h to c
 | GA4 | `G-JPPBPVVNYN` |
 | Clarity | `w44i7isac0` |
 | ConvertKit form | `9135329` |
+
+### ConvertKit custom fields (must exist or fields are silently dropped)
+`utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`, `referrer`
+
+### GA4 custom dimensions (event-scoped)
+`utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`
