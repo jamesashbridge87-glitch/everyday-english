@@ -45,17 +45,17 @@ curl -s "https://guide.youraussieuncle.com.au/?cb=$(date +%s)" \
 
 ## Pending — pick up here
 
-### A. Confirm full UTM end-to-end flow
-Visit a UTM URL in Incognito, submit a test email, and verify:
-```
-https://guide.youraussieuncle.com.au/?utm_source=test&utm_medium=manual&utm_campaign=verify
-```
-Then check:
-1. **Pixel Helper** shows `Lead` event params include `utm_source: test`, `utm_medium: manual`, `utm_campaign: verify`
-2. **GA4 Realtime** shows `generate_lead` (this is also the still-outstanding GA4 generate_lead verification from last session — kill two birds)
-3. **ConvertKit** subscriber record shows `utm_source`, `utm_medium`, `utm_campaign`, `referrer` populated
+### A. UTM end-to-end flow — verification status
+Tested with `https://guide.youraussieuncle.com.au/?utm_source=test&utm_medium=manual&utm_campaign=verify`:
+1. ✅ **Pixel Helper** showed `Lead` with UTM params
+2. ⚠️ **GA4 Realtime** — `generate_lead` not visible. **Debug parked 2026-05-06.** `page_view` works (so GA4 base is loading), but `generate_lead` doesn't appear in Realtime. When resuming:
+   - F12 → Network → filter `collect` → submit form → look for second POST with `en=generate_lead`
+   - Check `typeof gtag` in Console after page load
+   - Try manually firing in Console: `gtag('event', 'generate_lead', { currency: 'AUD', value: 1, content_name: 'manual-test' })`
+   - GA4 dashboard lag for first instance of new event names can be several minutes to hours
+3. ✅ **ConvertKit** subscriber showed UTMs populated
 
-If GA4 `generate_lead` still doesn't appear in Realtime: F12 → Network → filter `collect` → look for second POST with `en=generate_lead` in payload after submit. If POST appears but Realtime doesn't show, it's GA4 dashboard lag (can take a few minutes for new event names). If POST never appears, check Console for errors.
+Net: Meta + ConvertKit attribution working. GA4 event-level attribution unverified, but GA4's built-in Acquisition reports still pick up UTMs via auto-captured `page_view`, so campaign reporting isn't blocked.
 
 ### B. Remaining post-launch tasks (priority order)
 1. **GA4 Key Event** — Admin → Events → toggle `generate_lead` as Key Event so it shows in conversion reports.
